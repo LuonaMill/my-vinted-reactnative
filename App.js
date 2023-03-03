@@ -1,7 +1,7 @@
 import "react-native-gesture-handler";
 
-import * as Font from "expo-font";
-import * as SplashScreen from "expo-splash-screen";
+// import { useFonts } from "expo-font";
+// import * as SplashScreen from "expo-splash-screen";
 
 // import Apploading from "expo-app-loading";
 
@@ -23,15 +23,6 @@ import Publish from "./screens/Publish";
 import Profile from "./screens/Profile";
 import Search from "./screens/Search";
 
-//! J'importe des fonts
-// const getFonts = () =>
-//   Font.loadAsync({
-//     openSans: require("./assets/fonts/OpenSans/OpenSans-Regular.ttf"),
-//     openSansBold: require("./assets/fonts/OpenSans/OpenSans-Bold.ttf"),
-//   });
-
-SplashScreen.preventAutoHideAsync();
-
 //! Pour ma navigation, je vais utiliser des stacks screens et des tab screens
 // Arrivée sur l'appli :
 // 1- SplashScreen
@@ -41,69 +32,16 @@ const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [fontsLoaded, setFontsLoaded] = useState(false);
-  const [appIsReady, setAppIsReady] = useState(false);
-
-  useEffect(() => {
-    const prepare = async () => {
-      try {
-        // Pre-load fonts, make any API calls you need to do here
-        await Font.loadAsync({
-          openSans: require("./assets/fonts/OpenSans/OpenSans-Regular.ttf"),
-          openSansBold: require("./assets/fonts/OpenSans/OpenSans-Bold.ttf"),
-        });
-        // Artificially delay for two seconds to simulate a slow loading
-        // experience. Please remove this if you copy and paste the code!
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-      } catch (e) {
-        console.warn(e);
-      } finally {
-        // Tell the application to render
-        setAppIsReady(true);
-      }
-    };
-
-    prepare();
-  }, []);
-
-  const onLayoutRootView = useCallback(async () => {
-    if (appIsReady) {
-      // This tells the splash screen to hide immediately! If we call this after
-      // `setAppIsReady`, then we may see a blank screen while the app is
-      // loading its initial state and rendering its first pixels. So instead,
-      // we hide the splash screen once we know the root view has already
-      // performed layout.
-      await SplashScreen.hideAsync();
-    }
-  }, [appIsReady]);
-
-  if (!appIsReady) {
-    return null;
-  }
-
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        {/* {fontsLoaded ? ( */}
-        <Stack.Screen
-          name="SplashScreen"
-          options={{ headerShown: false }}
-          component={SplashScreenTest}
-        />
-        {/* // <Apploading
-          //   startAsync={getFonts}
-          //   onFinish={() => {
-          //     setFontsLoaded(true);
-          //   }}
-          //   onError={console.warn}
-          // /> */}
+        <Stack.Screen name="Login" component={Login} />
+
         <Stack.Screen
           name="HomeLogin"
           options={{ headerShown: false }}
           component={HomeLogin}
         />
-        <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Signup" component={Signup} />
         <Stack.Screen name="Tab" options={{ headerShown: false }}>
           {() => (
@@ -190,10 +128,3 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
-
-{
-  /* <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View> */
-}

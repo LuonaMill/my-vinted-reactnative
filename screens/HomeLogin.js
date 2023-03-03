@@ -1,3 +1,5 @@
+import { useFonts } from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
 import {
   Image,
   SafeAreaView,
@@ -7,15 +9,32 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
+import { useCallback } from "react";
 import Constants from "expo-constants";
 import logo from "../assets/logo.png";
 import mainPicture from "../assets/image1.png";
 
+SplashScreen.preventAutoHideAsync();
+
 export default function HomeLogin() {
   const { height, width } = useWindowDimensions();
 
+  const [fontsLoaded] = useFonts({
+    VintedFont: require("../assets/fonts/VintedFont.ttf"),
+  });
+
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
-    <SafeAreaView style={styles.safeAreaView}>
+    <SafeAreaView style={styles.safeAreaView} onLayout={onLayoutRootView}>
       <View style={[styles.header, { width: width }]}>
         <Image source={logo} style={styles.logo} />
       </View>
