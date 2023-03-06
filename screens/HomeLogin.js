@@ -1,5 +1,3 @@
-import { useFonts } from "expo-font";
-import * as SplashScreen from "expo-splash-screen";
 import {
   Image,
   SafeAreaView,
@@ -9,32 +7,18 @@ import {
   View,
   useWindowDimensions,
 } from "react-native";
-import { useCallback } from "react";
 import Constants from "expo-constants";
 import logo from "../assets/logo.png";
 import mainPicture from "../assets/image1.png";
-
-SplashScreen.preventAutoHideAsync();
+import { useNavigation } from "@react-navigation/native";
+import { colors } from "../src/utils/colors";
 
 export default function HomeLogin() {
   const { height, width } = useWindowDimensions();
-
-  const [fontsLoaded] = useFonts({
-    VintedFont: require("../assets/fonts/VintedFont.ttf"),
-  });
-
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
-      await SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
-
-  if (!fontsLoaded) {
-    return null;
-  }
+  const navigation = useNavigation();
 
   return (
-    <SafeAreaView style={styles.safeAreaView} onLayout={onLayoutRootView}>
+    <SafeAreaView style={styles.safeAreaView}>
       <View style={[styles.header, { width: width }]}>
         <Image source={logo} style={styles.logo} />
       </View>
@@ -45,19 +29,36 @@ export default function HomeLogin() {
             style={[styles.mainPicture, { width: width }]}
           />
         </View>
-        <View>
+        <View style={styles.mainZoneBottom}>
           <View>
-            <Text>
-              Vends sans frais ce que tu ne portes plus. Rejoins-nous !
+            <Text style={styles.mainText}>
+              Vends sans frais ce que tu ne portes plus.
             </Text>
+            <Text style={styles.mainText}>Rejoins-nous !</Text>
           </View>
           <View>
             <TouchableOpacity style={styles.btnPrimary}>
-              <Text style={styles.textPrimary}>S'inscrire sur Vinted</Text>
+              <Text
+                style={styles.textPrimary}
+                onPress={() => {
+                  navigation.navigate("Signup");
+                }}
+              >
+                S'inscrire sur Vinted
+              </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.btnReversePrimary}>
+            <TouchableOpacity
+              style={styles.btnReversePrimary}
+              onPress={() => {
+                navigation.navigate("Login");
+              }}
+            >
               <Text style={styles.textReversePrimary}>J'ai déjà un compte</Text>
             </TouchableOpacity>
+            <View style={styles.footer}>
+              <Text style={styles.lightGrayText}>A propos de Vinted : </Text>
+              <Text style={styles.darkGrayText}>Notre plateforme </Text>
+            </View>
           </View>
         </View>
       </View>
@@ -74,8 +75,9 @@ const styles = StyleSheet.create({
   },
   header: {
     justifyContent: "flex-start",
-    borderBottomColor: "lightgrey",
-    borderBottomWidth: 2,
+    // borderBottomColor: "#E5E5E5",
+    borderBottomColor: colors.vLightestGrey,
+    borderBottomWidth: 1,
   },
   logo: {
     width: 100,
@@ -85,14 +87,29 @@ const styles = StyleSheet.create({
   },
   mainZone: {
     justifyContent: "space-evenly",
-    backgroundColor: "pink",
+    // backgroundColor: "pink",
   },
   mainPicture: {
     height: 300,
     resizeMode: "contain",
+    marginTop: 30,
   },
+  mainText: {
+    fontSize: 32,
+    textAlign: "center",
+    color: colors.vDarkestGrey,
+    marginLeft: 20,
+    fontFamily: "VintedFont",
+  },
+  mainZoneBottom: {
+    height: "45%",
+    // backgroundColor: "yellow",
+    justifyContent: "space-between",
+    padding: 20,
+  },
+
   btnPrimary: {
-    backgroundColor: "#09B1BA",
+    backgroundColor: colors.vBlue,
     height: 50,
     margin: 10,
     justifyContent: "center",
@@ -102,9 +119,10 @@ const styles = StyleSheet.create({
   textPrimary: {
     color: "white",
     fontSize: 20,
+    fontFamily: "VintedFont",
   },
   btnReversePrimary: {
-    borderColor: "#09B1BA",
+    borderColor: colors.vBlue,
     borderWidth: 1,
     height: 50,
     margin: 10,
@@ -114,7 +132,20 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === "ios" ? "VintedFont" : "VintedFont.ttf",
   },
   textReversePrimary: {
-    color: "#09B1BA",
+    color: colors.vBlue,
     fontSize: 20,
+    fontFamily: "VintedFont",
+  },
+  footer: {
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  darkGrayText: {
+    color: colors.vDarkerGrey,
+    fontFamily: "VintedFont",
+  },
+  lightGrayText: {
+    color: colors.vLightGrey,
+    fontFamily: "VintedFont",
   },
 });
