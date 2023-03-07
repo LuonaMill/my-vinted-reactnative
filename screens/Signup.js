@@ -1,5 +1,5 @@
 import {
-  Dimensions,
+  Image,
   SafeAreaView,
   StyleSheet,
   TouchableOpacity,
@@ -21,30 +21,62 @@ import LgBlueButton from "../components/LgBlueButton";
 import LgWhiteButton from "../components/LgWhiteButton";
 import { colors } from "../src/utils/colors";
 import { spacing } from "../src/utils/sizes";
-
-const windowHeight = Dimensions.get("window").height;
-const windowWidth = Dimensions.get("window").width;
+import * as ImagePicker from "expo-image-picker";
 
 export default function Signup({ setToken, setId, userToken }) {
   const navigation = useNavigation();
-  const { height, width } = useWindowDimensions();
+  const { styles } = useStyle();
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [newsletter, setNewsletter] = useState(false);
+  const [picture, setPicture] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
+
+  const getPermissionAndGetPicture = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status === "granted") {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        allowsEditing: true,
+        aspect: [1, 1],
+      });
+      if (result.canceled === true) {
+        alert("Vous n'avez pas sélectionné d'image");
+      } else {
+        setPicture(result.assets[0].uri);
+      }
+    } else {
+      alert("Permission refusée");
+    }
+  };
 
   const handleSubmit = async () => {
     setErrorMessage(null);
     try {
+      const uri = picture;
+      const uriParts = uri.split(".");
+      const fileType = uriParts[1];
+
+      const formData = new FormData();
+      formData.append("avatar", {
+        uri,
+        name: `avatarPicture`,
+        type: `image/${fileType}`,
+      });
+      formData.append("username", username);
+      formData.append("email", email);
+      formData.append("password", password);
+      formData.append("newsletter", newsletter);
+
+      console.log(fileType);
+      console.log(uri);
+
       if (email && username && password) {
-        const response = await axios.post("http://localhost:4002/user/signup", {
-          username,
-          email,
-          password,
-          newsletter,
-        });
+        const response = await axios.post(
+          "http://localhost:4002/user/signup",
+          formData
+        );
         console.log(response.data._id);
         if (response.data.token && response.data._id) {
           setToken(response.data.token);
@@ -67,14 +99,14 @@ export default function Signup({ setToken, setId, userToken }) {
   };
 
   return (
-    <SafeAreaView style={[styles.safeAreaView, { width: width }]}>
+    <SafeAreaView style={styles.safeAreaView}>
       {!userToken && (
         <KeyboardAwareScrollView>
           <TopNavBar pageTitle="Inscris-toi" goBack />
           <ScrollView contentContainerStyle={styles.container}>
             <View style={styles.containerView}>
-              <View>
-                <View style={styles.centeredZone}>
+              <View style={styles.centeredZone}>
+                <View>
                   <TextInput
                     placeholder="Nom d'utilisateur"
                     style={styles.input}
@@ -101,6 +133,42 @@ export default function Signup({ setToken, setId, userToken }) {
                       setPassword(input);
                     }}
                   />
+                </View>
+                <View style={styles.pictureZone}>
+                  {picture ? (
+                    <>
+                      <View>
+                        <TouchableOpacity
+                          style={styles.pictureSubzone}
+                          onPress={getPermissionAndGetPicture}
+                        >
+                          <Text style={styles.vintedFont16Blue}>Modifier</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={styles.pictureSubzone}
+                          onPress={() => {
+                            setPicture(null);
+                          }}
+                        >
+                          <Text style={styles.vintedFont16Blue}>Supprimer</Text>
+                        </TouchableOpacity>
+                      </View>
+                      <Image
+                        style={styles.imgSize}
+                        source={{ uri: `${picture}` }}
+                      />
+                    </>
+                  ) : (
+                    <TouchableOpacity
+                      style={styles.picturesZone}
+                      onPress={getPermissionAndGetPicture}
+                    >
+                      <LgWhiteButton
+                        title="+ Ajouter une photo de profil"
+                        border={true}
+                      />
+                    </TouchableOpacity>
+                  )}
                 </View>
                 <View style={styles.paddingZone}>
                   <View style={styles.checkboxContainer}>
@@ -141,72 +209,102 @@ export default function Signup({ setToken, setId, userToken }) {
   );
 }
 
-const styles = StyleSheet.create({
-  safeAreaView: {
-    marginTop: Platform.OS === "android" ? Constants.statusBarHeight : 0,
-    backgroundColor: "white",
-    // justifyContent: "center",
-    width: windowWidth,
-    flex: 1,
-  },
+const useStyle = () => {
+  const dimensions = useWindowDimensions();
+  const styles = StyleSheet.create({
+    safeAreaView: {
+      backgroundColor: "white",
+      width: dimensions.width,
+      flex: 1,
+    },
 
-  container: {
-    height: windowHeight * 0.9,
-    paddingTop: spacing.sm,
-  },
-  containerView: {
-    // height: "90%",
-    justifyContent: "space-between",
-  },
+    container: {
+      height: dimensions.height * 0.9,
+      paddingTop: spacing.sm,
+    },
+    containerView: {
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
 
-  centeredZone: {
-    alignItems: "center",
-    marginTop: spacing.sm,
-    marginBottom: spacing.sm,
-  },
+    centeredZone: {
+      width: dimensions.width * 0.9,
+      justifyContent: "center",
+      marginTop: spacing.sm,
+      marginBottom: spacing.sm,
+    },
 
-  paddingZone: {
-    padding: spacing.md,
-    gap: spacing.sm,
-  },
+    paddingZone: {
+      maxWidth: dimensions.width * 0.9,
+      padding: spacing.md,
+      gap: spacing.sm,
+    },
 
-  opacityButton: {
-    height: 40,
-    width: 100,
-    backgroundColor: "white",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 10,
-    margin: 10,
-  },
-  input: {
-    height: 50,
-    width: 400,
-    borderBottomColor: "#E5E5E5",
-    borderBottomWidth: 1,
-  },
-  checkboxContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  vintedFont24: {
-    fontFamily: "VintedFont",
-    fontSize: 24,
-  },
+    pictureZone: {
+      width: dimensions.width * 0.9,
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
+      marginTop: 20,
+      marginBottom: 20,
+      gap: 40,
+      // borderBottomColor: colors.vLightGrey,
+      // borderBottomWidth: 1,
+    },
+    pictureSubzone: {
+      maxWidth: dimensions.width * 0.9,
+      padding: 20,
+    },
 
-  btnReversePrimary: {
-    borderColor: "#09B1BA",
-    borderWidth: 1,
-    height: 50,
-    margin: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 5,
-    fontFamily: "VintedFont",
-  },
-  errorMessage: {
-    fontFamily: "VintedFont",
-    fontSize: 14,
-    color: "red",
-  },
-});
+    opacityButton: {
+      height: 40,
+      width: 100,
+      backgroundColor: "white",
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: 10,
+      margin: 10,
+    },
+    input: {
+      height: 50,
+      width: 400,
+      borderBottomColor: colors.vLightestGrey,
+      borderBottomWidth: 1,
+    },
+    checkboxContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    vintedFont24: {
+      fontFamily: "VintedFont",
+      fontSize: 24,
+    },
+    vintedFont16Blue: {
+      fontFamily: "VintedFont",
+      fontSize: 16,
+      color: colors.vBlue,
+    },
+
+    btnReversePrimary: {
+      borderColor: colors.vBlue,
+      borderWidth: 1,
+      height: 50,
+      margin: 10,
+      justifyContent: "center",
+      alignItems: "center",
+      borderRadius: 5,
+      fontFamily: "VintedFont",
+    },
+    errorMessage: {
+      fontFamily: "VintedFont",
+      fontSize: 14,
+      color: "red",
+    },
+    imgSize: {
+      height: 120,
+      width: 120,
+      marginRight: 10,
+    },
+  });
+  return { styles };
+};

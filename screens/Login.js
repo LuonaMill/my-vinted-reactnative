@@ -1,5 +1,4 @@
 import {
-  Image,
   Dimensions,
   SafeAreaView,
   StyleSheet,
@@ -8,6 +7,7 @@ import {
   View,
   TouchableOpacity,
   Platform,
+  useWindowDimensions,
 } from "react-native";
 import Constants from "expo-constants";
 import { useNavigation } from "@react-navigation/core";
@@ -21,10 +21,8 @@ import LgWhiteButton from "../components/LgWhiteButton";
 import { spacing } from "../src/utils/sizes";
 import { TextInput } from "react-native-paper";
 
-const windowHeight = Dimensions.get("window").height;
-const windowWidth = Dimensions.get("window").width;
-
 export default function Login({ userToken, setToken, userId, setId }) {
+  const { styles } = useStyle();
   const navigation = useNavigation();
 
   const [email, setEmail] = useState("laurine4@mail.com");
@@ -39,10 +37,13 @@ export default function Login({ userToken, setToken, userId, setId }) {
         setErrorMessage(null);
       }
       try {
-        const response = await axios.post("http://localhost:4002/user/login", {
-          email,
-          password,
-        });
+        const response = await axios.post(
+          `${process.env.VINTED_BACKEND}/user/login`,
+          {
+            email,
+            password,
+          }
+        );
         console.log(response.data);
         if (response.data.token && response.data._id) {
           setToken(response.data.token);
@@ -85,6 +86,7 @@ export default function Login({ userToken, setToken, userId, setId }) {
                     onChangeText={(input) => {
                       setPassword(input);
                     }}
+                    secureTextEntry
                   />
                 </View>
                 <View style={styles.centeredZone}>
@@ -120,34 +122,35 @@ export default function Login({ userToken, setToken, userId, setId }) {
     </SafeAreaView>
   );
 }
+const useStyle = () => {
+  const dimensions = useWindowDimensions();
+  const styles = StyleSheet.create({
+    safeAreaView: {
+      backgroundColor: "white",
+      flex: 1,
+      width: dimensions.width,
+    },
+    container: {
+      height: dimensions.height * 0.9,
+      paddingTop: spacing.sm,
+    },
+    containerView: {
+      height: "90%",
+      justifyContent: "space-between",
+    },
+    centeredZone: {
+      alignItems: "center",
+      marginTop: spacing.sm,
+      marginBottom: spacing.sm,
+    },
 
-const styles = StyleSheet.create({
-  safeAreaView: {
-    marginTop: Platform.OS === "android" ? Constants.statusBarHeight : 0,
-    backgroundColor: "white",
-    flex: 1,
-    width: windowWidth,
-  },
-  container: {
-    height: windowHeight * 0.9,
-    paddingTop: spacing.sm,
-  },
-  containerView: {
-    height: "90%",
-    justifyContent: "space-between",
-  },
-  centeredZone: {
-    alignItems: "center",
-    marginTop: spacing.sm,
-    marginBottom: spacing.sm,
-  },
-
-  input: {
-    height: 50,
-    width: windowWidth * 0.9,
-    borderBottomColor: "#E5E5E5",
-    borderBottomWidth: 1,
-    backgroundColor: "white",
-    // alignItems: "flex-end",
-  },
-});
+    input: {
+      height: 50,
+      width: dimensions.width * 0.9,
+      borderBottomColor: "#E5E5E5",
+      borderBottomWidth: 1,
+      backgroundColor: "white",
+    },
+  });
+  return { styles };
+};

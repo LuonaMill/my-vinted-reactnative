@@ -9,25 +9,22 @@ import {
 } from "react-native";
 import Constants from "expo-constants";
 import logo from "../assets/logo.png";
-import mainPicture from "../assets/image1.png";
+import mainPicture from "../assets/image1.jpg";
 import { useNavigation } from "@react-navigation/native";
 import { colors } from "../src/utils/colors";
 
 export default function HomeLogin() {
-  const { height, width } = useWindowDimensions();
+  const { styles } = useStyle();
   const navigation = useNavigation();
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
-      <View style={[styles.header, { width: width }]}>
+      <View style={styles.header}>
         <Image source={logo} style={styles.logo} />
       </View>
-      <View style={[styles.mainZone, { width: width, height: height * 0.9 }]}>
-        <View>
-          <Image
-            source={mainPicture}
-            style={[styles.mainPicture, { width: width }]}
-          />
+      <View style={styles.mainZone}>
+        <View style={styles.centered}>
+          <Image source={mainPicture} style={styles.mainPicture} />
         </View>
         <View style={styles.mainZoneBottom}>
           <View>
@@ -57,7 +54,13 @@ export default function HomeLogin() {
             </TouchableOpacity>
             <View style={styles.footer}>
               <Text style={styles.lightGrayText}>A propos de Vinted : </Text>
-              <Text style={styles.darkGrayText}>Notre plateforme </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate("InfoPlatform");
+                }}
+              >
+                <Text style={styles.darkGrayText}>Notre plateforme </Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -66,86 +69,96 @@ export default function HomeLogin() {
   );
 }
 
-const styles = StyleSheet.create({
-  safeAreaView: {
-    marginTop: Platform.OS === "android" ? Constants.statusBarHeight : 0,
-    backgroundColor: "white",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  header: {
-    justifyContent: "flex-start",
-    // borderBottomColor: "#E5E5E5",
-    borderBottomColor: colors.vLightestGrey,
-    borderBottomWidth: 1,
-  },
-  logo: {
-    width: 100,
-    height: 50,
-    margin: 10,
-    resizeMode: "contain",
-  },
-  mainZone: {
-    justifyContent: "space-evenly",
-    // backgroundColor: "pink",
-  },
-  mainPicture: {
-    height: 300,
-    resizeMode: "contain",
-    marginTop: 30,
-  },
-  mainText: {
-    fontSize: 32,
-    textAlign: "center",
-    color: colors.vDarkestGrey,
-    marginLeft: 20,
-    fontFamily: "VintedFont",
-  },
-  mainZoneBottom: {
-    height: "45%",
-    // backgroundColor: "yellow",
-    justifyContent: "space-between",
-    padding: 20,
-  },
+const useStyle = () => {
+  const dimensions = useWindowDimensions();
 
-  btnPrimary: {
-    backgroundColor: colors.vBlue,
-    height: 50,
-    margin: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 5,
-  },
-  textPrimary: {
-    color: "white",
-    fontSize: 20,
-    fontFamily: "VintedFont",
-  },
-  btnReversePrimary: {
-    borderColor: colors.vBlue,
-    borderWidth: 1,
-    height: 50,
-    margin: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 5,
-    fontFamily: Platform.OS === "ios" ? "VintedFont" : "VintedFont.ttf",
-  },
-  textReversePrimary: {
-    color: colors.vBlue,
-    fontSize: 20,
-    fontFamily: "VintedFont",
-  },
-  footer: {
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-  darkGrayText: {
-    color: colors.vDarkerGrey,
-    fontFamily: "VintedFont",
-  },
-  lightGrayText: {
-    color: colors.vLightGrey,
-    fontFamily: "VintedFont",
-  },
-});
+  const styles = StyleSheet.create({
+    safeAreaView: {
+      marginTop: Platform.OS === "android" ? Constants.statusBarHeight : 0,
+      backgroundColor: "white",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    header: {
+      justifyContent: "flex-start",
+      borderBottomColor: colors.vLightestGrey,
+      borderBottomWidth: 1,
+      width: dimensions.width,
+    },
+    logo: {
+      width: 100,
+      height: 50,
+      margin: 10,
+      resizeMode: "contain",
+    },
+    mainZone: {
+      justifyContent: "space-evenly",
+      width: dimensions.width,
+      height: dimensions.height * 0.9,
+    },
+    mainPicture: {
+      width: dimensions.width * 0.95,
+      height: 350,
+      resizeMode: "cover",
+    },
+    centered: {
+      alignItems: "center",
+    },
+    mainText: {
+      fontSize: 32,
+      textAlign: "center",
+      color: colors.vDarkestGrey,
+      marginLeft: 20,
+      fontFamily: "VintedFont",
+    },
+    mainZoneBottom: {
+      height: "40%",
+      justifyContent: "space-between",
+      padding: 20,
+    },
+
+    btnPrimary: {
+      backgroundColor: colors.vBlue,
+      height: 50,
+      marginLeft: 10,
+      marginRight: 10,
+      justifyContent: "center",
+      alignItems: "center",
+      borderRadius: 5,
+    },
+    textPrimary: {
+      color: "white",
+      fontSize: 20,
+      fontFamily: "VintedFont",
+    },
+    btnReversePrimary: {
+      borderColor: colors.vBlue,
+      borderWidth: 1,
+      height: 50,
+      margin: 10,
+      justifyContent: "center",
+      alignItems: "center",
+      borderRadius: 5,
+      fontFamily: Platform.OS === "ios" ? "VintedFont" : "VintedFont.ttf",
+    },
+    textReversePrimary: {
+      color: colors.vBlue,
+      fontSize: 20,
+      fontFamily: "VintedFont",
+    },
+    footer: {
+      flexDirection: "row",
+      justifyContent: "center",
+    },
+    darkGrayText: {
+      color: colors.vDarkerGrey,
+      fontFamily: "VintedFont",
+      textDecorationLine: "underline",
+    },
+    lightGrayText: {
+      color: colors.vLightGrey,
+      fontFamily: "VintedFont",
+    },
+  });
+  return { styles };
+};

@@ -18,8 +18,11 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import profilePicture from "../assets/photoprofil.jpeg";
+import LgWhiteButton from "../components/LgWhiteButton";
 import axios from "axios";
 import { ActivityIndicator } from "react-native-paper";
+import { Ionicons } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
 
 const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;
@@ -33,6 +36,25 @@ export default function Profile({ userId, setToken }) {
   const [isLoading, setIsLoading] = useState(true);
   const [counter, setCounter] = useState(0);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [avatar, setAvatar] = useState([]);
+
+  const getPermissionAndGetPicture = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status === "granted") {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        allowsEditing: true,
+        aspect: [1, 1],
+      });
+      if (result.canceled === true) {
+        alert("Vous n'avez pas sélectionné d'image");
+      } else {
+        setAvatar(result.assets[0].uri);
+        console.log(avatar);
+      }
+    } else {
+      alert("Permission refusée");
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -80,43 +102,68 @@ export default function Profile({ userId, setToken }) {
                   {counter} annonces en ligne
                 </Text>
               )}
+              <TouchableOpacity
+                style={[styles.whiteAndCenter, styles.cameraImg]}
+              >
+                <Ionicons
+                  name="camera-outline"
+                  size={26}
+                  color={colors.vDarkerGrey}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.whiteAndCenter, styles.galleryImg]}
+                onPress={getPermissionAndGetPicture}
+              >
+                <Ionicons
+                  name="ios-folder-open-outline"
+                  size={24}
+                  color={colors.vDarkerGrey}
+                />
+              </TouchableOpacity>
             </View>
           </LinearGradient>
 
-          <KeyboardAwareScrollView></KeyboardAwareScrollView>
-          <View>
-            <Text>Bienvenue sur ton profil {userData.account.username}</Text>
-          </View>
+          <KeyboardAwareScrollView>
+            <View style={styles.mainView}>
+              <View>
+                <Text>
+                  Bienvenue sur ton profil {userData.account.username}
+                </Text>
+              </View>
 
-          <TouchableOpacity
-            onPress={() => {
-              setAskForConfirmation(true);
-            }}
-            style={styles.opacityButton}
-          >
-            <Text>Se déconnecter</Text>
-          </TouchableOpacity>
-          {askForConfirmation && (
-            <>
-              <Text>Etes-vous sûr de vouloir vous déconnecter ?</Text>
               <TouchableOpacity
-                onPress={() => {
-                  setToken(null);
+                onPress={(event) => {
+                  event.stopPropagation();
+                  setAskForConfirmation(true);
                 }}
                 style={styles.opacityButton}
               >
-                <Text>Oui</Text>
+                <LgWhiteButton title="Se déconnecter" border={true} />
               </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  setAskForConfirmation(false);
-                }}
-                style={styles.opacityButton}
-              >
-                <Text>Non</Text>
-              </TouchableOpacity>
-            </>
-          )}
+              {askForConfirmation && (
+                <>
+                  <Text>Etes-vous sûr de vouloir vous déconnecter ?</Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setToken(null);
+                    }}
+                    style={styles.opacityButton}
+                  >
+                    <Text>Oui</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setAskForConfirmation(false);
+                    }}
+                    style={styles.opacityButton}
+                  >
+                    <Text>Non</Text>
+                  </TouchableOpacity>
+                </>
+              )}
+            </View>
+          </KeyboardAwareScrollView>
         </ScrollView>
       )}
     </SafeAreaView>
@@ -167,5 +214,28 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 15,
     fontFamily: "VintedFont",
+  },
+  whiteAndCenter: {
+    height: 35,
+    width: 35,
+    backgroundColor: "white",
+    justifyContent: "center",
+    alignItems: "center",
+    margin: 5,
+    borderRadius: "50%",
+  },
+  cameraImg: {
+    position: "absolute",
+    left: 120,
+  },
+  galleryImg: {
+    position: "absolute",
+    top: 50,
+    left: 120,
+  },
+  mainView: {
+    width: windowWidth,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

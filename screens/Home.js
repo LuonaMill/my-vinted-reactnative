@@ -2,7 +2,6 @@ import {
   Dimensions,
   ActivityIndicator,
   Image,
-  FlatList,
   SafeAreaView,
   StyleSheet,
   ScrollView,
@@ -17,13 +16,12 @@ import { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import TopNavBar from "../components/TopNavBar";
-import { spacing } from "../src/utils/sizes";
 
 const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;
 
 export default function Home({ userToken, userId }) {
-  const { height, width } = useWindowDimensions();
+  const { styles } = useStyle();
   const navigation = useNavigation();
   const [data, setData] = useState();
   const [isLoading, setIsLoading] = useState(true);
@@ -31,17 +29,18 @@ export default function Home({ userToken, userId }) {
 
   useEffect(() => {
     const fetchOffers = async () => {
-      const response = await axios.get("http://localhost:4002/offers");
+      const response = await axios.get(`${process.env.VINTED_BACKEND}/offers`);
       setData(response.data.offers);
       setIsLoading(false);
     };
     fetchOffers();
   }, []);
 
+  //! A RETRAVAILLER
   const handleFavorite = async (event) => {
     if (!favorite) {
       const addToFavorite = await axios.post(
-        `http://localhost:4002/user/favorites/${userToken}`,
+        `${process.env.VINTED_BACKEND}/user/favorites/${userToken}`,
         {
           token: userToken,
           product_name: data.product_name,
@@ -128,28 +127,32 @@ export default function Home({ userToken, userId }) {
   );
 }
 
-const styles = StyleSheet.create({
-  safeAreaView: {
-    marginTop: Platform.OS === "android" ? Constants.statusBarHeight : 0,
-    flex: 1,
-    backgroundColor: "white",
-    width: windowWidth,
-  },
+const useStyle = () => {
+  const dimensions = useWindowDimensions();
+  const styles = StyleSheet.create({
+    safeAreaView: {
+      marginTop: Platform.OS === "android" ? Constants.statusBarHeight : 0,
+      flex: 1,
+      backgroundColor: "white",
+      width: windowWidth,
+    },
 
-  centered: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  row: {
-    flexDirection: "row",
-  },
-  wrap: {
-    flexWrap: "wrap",
-    gap: 10,
-  },
-  imageCard: {
-    width: 200,
-    height: 300,
-    borderRadius: 10,
-  },
-});
+    centered: {
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    row: {
+      flexDirection: "row",
+    },
+    wrap: {
+      flexWrap: "wrap",
+      gap: 10,
+    },
+    imageCard: {
+      width: 200,
+      height: 300,
+      borderRadius: 10,
+    },
+  });
+  return { styles };
+};

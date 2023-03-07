@@ -24,6 +24,7 @@ import Profile from "./screens/Profile";
 import Search from "./screens/Search";
 import Offer from "./screens/Offer";
 import MoreTests from "./Tests/MoreTests";
+import InfoPlatform from "./screens/InfoPlatform";
 
 //! Pour ma navigation, je vais utiliser des stacks screens et des tab screens
 // Arrivée sur l'appli :
@@ -84,6 +85,16 @@ export default function App() {
         <ActivityIndicator />
       ) : !userToken ? (
         <Stack.Navigator>
+          <Stack.Screen
+            name="HomeLogin"
+            options={{ headerShown: false }}
+            component={HomeLogin}
+          />
+          <Stack.Screen
+            name="InfoPlatform"
+            options={{ headerShown: false }}
+            component={InfoPlatform}
+          />
           <Stack.Screen name="Login" options={{ headerShown: false }}>
             {() => (
               <Login
@@ -94,9 +105,7 @@ export default function App() {
               />
             )}
           </Stack.Screen>
-          <Stack.Screen name="HomeLogin" options={{ headerShown: false }}>
-            {() => <HomeLogin />}
-          </Stack.Screen>
+
           <Stack.Screen name="Signup" options={{ headerShown: false }}>
             {() => (
               <Signup
@@ -182,9 +191,10 @@ export default function App() {
                     <Stack.Navigator>
                       <Stack.Screen
                         name="Vendre"
-                        component={Publish}
                         options={{ headerShown: false }}
-                      />
+                      >
+                        {() => <Publish token={userToken} />}
+                      </Stack.Screen>
                     </Stack.Navigator>
                   )}
                 </Tab.Screen>

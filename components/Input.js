@@ -8,17 +8,17 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { colors } from "../src/utils/colors";
+import { useState } from "react";
 
-export default function Input({ title, type, placeholder, lines }) {
+export default function Input({ title, type, placeholder, lines, setState }) {
   const { styles } = useStyle();
+  //   const [setState, setSetState] = useState();
 
   return (
     <View style={styles.inputView}>
       {title && <Text style={styles.inputTitle}>{title}</Text>}
       <TextInput
         placeholder={placeholder}
-        multiline={true}
-        numberOfLines={lines > 1 && lines}
         keyboardType={
           type === "email"
             ? "email-address"
@@ -27,6 +27,7 @@ export default function Input({ title, type, placeholder, lines }) {
             : "default"
         }
         style={styles.input}
+        onChangeText={(input) => setState(input)}
       />
     </View>
   );
