@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Text,
   View,
+  useWindowDimensions,
 } from "react-native";
 import Constants from "expo-constants";
 import { fontSizes, spacing } from "../src/utils/sizes";
@@ -19,18 +20,17 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import profilePicture from "../assets/photoprofil.jpeg";
 import LgWhiteButton from "../components/LgWhiteButton";
+import CustomText from "../components/CustomText";
 import axios from "axios";
 import { ActivityIndicator } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 
-const windowHeight = Dimensions.get("window").height;
-const windowWidth = Dimensions.get("window").width;
-
 // Dans cette page, je souhaite récupérer les infos de profil
 
 export default function Profile({ userId, setToken }) {
   const navigation = useNavigation();
+  const { styles } = useStyle();
   const [askForConfirmation, setAskForConfirmation] = useState(false);
   const [userData, setUserData] = useState();
   const [isLoading, setIsLoading] = useState(true);
@@ -61,7 +61,7 @@ export default function Profile({ userId, setToken }) {
       try {
         setErrorMessage(null);
         const response = await axios.get(
-          `http://localhost:4002/user/${userId}`
+          `https://site--backend-vinted--wbbmf4gr4bwy.code.run/user/${userId}`
         );
         console.log(response.data);
         if (response.data) {
@@ -79,7 +79,10 @@ export default function Profile({ userId, setToken }) {
   return (
     <SafeAreaView style={styles.safeAreaView}>
       {isLoading ? (
-        <ActivityIndicator />
+        <>
+          <ActivityIndicator />
+          <Text>{userId}</Text>
+        </>
       ) : (
         <ScrollView>
           <LinearGradient
@@ -94,14 +97,21 @@ export default function Profile({ userId, setToken }) {
             />
             <View style={styles.userPosition}>
               <Image source={profilePicture} style={styles.imgSize} />
-              <Text style={styles.titleText}>{userData.account.username}</Text>
-              {counter === 0 ? (
-                <Text style={styles.subtitleText}>Pas d'annonce en ligne</Text>
-              ) : (
-                <Text style={styles.subtitleText}>
-                  {counter} annonces en ligne
-                </Text>
-              )}
+              <CustomText
+                color="white"
+                size={19}
+                text={userData.account.username}
+              />
+              <CustomText
+                color="white"
+                text={
+                  !counter
+                    ? "Pas d'annonce en ligne"
+                    : counter === 1
+                    ? "1 annonce en ligne"
+                    : `${counter} annonces en ligne`
+                }
+              />
               <TouchableOpacity
                 style={[styles.whiteAndCenter, styles.cameraImg]}
               >
@@ -126,11 +136,12 @@ export default function Profile({ userId, setToken }) {
 
           <KeyboardAwareScrollView>
             <View style={styles.mainView}>
-              <View>
-                <Text>
-                  Bienvenue sur ton profil {userData.account.username}
-                </Text>
-              </View>
+              <CustomText
+                text={`Bienvenue sur ton profil ${userData.account.username}`}
+                color={colors.vDarkestGrey}
+                size={24}
+                textAlign="center"
+              />
 
               <TouchableOpacity
                 onPress={(event) => {
@@ -170,72 +181,67 @@ export default function Profile({ userId, setToken }) {
   );
 }
 
-const styles = StyleSheet.create({
-  safeAreaView: {
-    marginTop: Platform.OS === "android" ? Constants.statusBarHeight : 0,
-    backgroundColor: "white",
-    justifyContent: "center",
-    alignItems: "center",
-    flex: 1,
-  },
-  opacityButton: {
-    height: 40,
-    width: 100,
-    backgroundColor: "white",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 10,
-    margin: 10,
-  },
-  avatarZone: {
-    width: windowWidth,
-    height: windowHeight * 0.3,
-    backgroundColor:
-      "linear-gradient(209.69deg, #09B1BA 18.16%, rgba(9, 177, 186, 0.36) 85.56%);",
-  },
-  imgSize: {
-    height: 120,
-    width: 120,
-    borderRadius: 60,
-  },
-  userPosition: {
-    position: "absolute",
-    top: (windowHeight * 0.3 - 150) / 2,
-    left: (windowWidth - 150) / 2,
-    alignItems: "center",
-    gap: spacing.sm,
-  },
-  titleText: {
-    color: "white",
-    fontSize: 19,
-    fontFamily: "VintedFont",
-  },
-  subtitleText: {
-    color: "white",
-    fontSize: 15,
-    fontFamily: "VintedFont",
-  },
-  whiteAndCenter: {
-    height: 35,
-    width: 35,
-    backgroundColor: "white",
-    justifyContent: "center",
-    alignItems: "center",
-    margin: 5,
-    borderRadius: "50%",
-  },
-  cameraImg: {
-    position: "absolute",
-    left: 120,
-  },
-  galleryImg: {
-    position: "absolute",
-    top: 50,
-    left: 120,
-  },
-  mainView: {
-    width: windowWidth,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});
+const useStyle = () => {
+  const dimensions = useWindowDimensions();
+  const styles = StyleSheet.create({
+    safeAreaView: {
+      marginTop: Platform.OS === "android" ? Constants.statusBarHeight : 0,
+      backgroundColor: "white",
+      justifyContent: "center",
+      alignItems: "center",
+      flex: 1,
+    },
+    opacityButton: {
+      height: 40,
+      width: 100,
+      backgroundColor: "white",
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: 10,
+      margin: 10,
+    },
+    avatarZone: {
+      width: dimensions.width,
+      height: dimensions.height * 0.3,
+      backgroundColor:
+        "linear-gradient(209.69deg, #09B1BA 18.16%, rgba(9, 177, 186, 0.36) 85.56%);",
+    },
+    imgSize: {
+      height: 120,
+      width: 120,
+      borderRadius: 60,
+    },
+    userPosition: {
+      position: "absolute",
+      top: (dimensions.height * 0.3 - 150) / 2,
+      left: (dimensions.width - 150) / 2,
+      alignItems: "center",
+      gap: spacing.sm,
+    },
+
+    whiteAndCenter: {
+      height: 35,
+      width: 35,
+      backgroundColor: "white",
+      justifyContent: "center",
+      alignItems: "center",
+      margin: 5,
+      borderRadius: 17.5,
+    },
+    cameraImg: {
+      position: "absolute",
+      left: 120,
+    },
+    galleryImg: {
+      position: "absolute",
+      top: 50,
+      left: 120,
+    },
+    mainView: {
+      width: dimensions.width,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+  });
+  return { styles };
+};

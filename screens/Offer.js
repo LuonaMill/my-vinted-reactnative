@@ -22,7 +22,7 @@ export default function Offer() {
     const fetchOfferById = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:4002/offer/${offerId}`
+          `https://site--backend-vinted--wbbmf4gr4bwy.code.run/offer/${offerId}`
         );
         console.log(response.data);
         setData(response.data);
@@ -42,7 +42,7 @@ export default function Offer() {
         <ScrollView>
           <View>
             <Image
-              source={{ uri: `${data.product_image.secure_url}` }}
+              source={{ uri: `${data.product_image?.secure_url}` }}
               style={styles.imageCard}
             />
             <Text>Here is Offer screen{offerId}</Text>

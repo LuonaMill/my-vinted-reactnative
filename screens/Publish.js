@@ -20,12 +20,14 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
 import axios from "axios";
+import CustomText from "../components/CustomText";
 
 export default function Publish({ token }) {
   const { styles } = useStyle();
   const [picture, setPicture] = useState([]);
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState(0);
+  const [description, setDescription] = useState("");
 
   //* Envoi de la donnée vers serveur
 
@@ -48,7 +50,7 @@ export default function Publish({ token }) {
       console.log(uri);
 
       const response = await axios.post(
-        "http://localhost:4002/offer/publish",
+        "https://site--backend-vinted--wbbmf4gr4bwy.code.run/offer/publish",
         formData,
         {
           headers: {
@@ -59,6 +61,7 @@ export default function Publish({ token }) {
         }
       );
       console.log(response.data);
+      alert("Votre article a bien été ajouté");
     } catch (error) {
       alert(
         error?.response?.data?.message ||
@@ -125,6 +128,7 @@ export default function Publish({ token }) {
           <Input
             title="Décris ton article"
             placeholder="ex: porté quelques fois, taille correctement"
+            setState={setDescription}
           />
           <Input
             title="Prix"
@@ -134,14 +138,16 @@ export default function Publish({ token }) {
           />
         </View>
         <View style={styles.borderBetweenViews}></View>
+        {/* <CustomText text="je teste" /> */}
+
         <Button title="Ajouter un article" onPress={handleSubmit} />
 
-        {price > 0 && (
+        {/* {price > 0 && (
           <View>
             <Text>{title}</Text>
             <Text>{price}</Text>
           </View>
-        )}
+        )} */}
       </KeyboardAwareScrollView>
     </SafeAreaView>
   );

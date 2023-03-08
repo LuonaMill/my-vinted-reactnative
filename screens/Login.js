@@ -25,7 +25,7 @@ export default function Login({ userToken, setToken, userId, setId }) {
   const { styles } = useStyle();
   const navigation = useNavigation();
 
-  const [email, setEmail] = useState("laurine4@mail.com");
+  const [email, setEmail] = useState("laurinelaurine2@mail.com");
   const [password, setPassword] = useState("blabla");
   const [errorMessage, setErrorMessage] = useState(null);
 
@@ -38,7 +38,7 @@ export default function Login({ userToken, setToken, userId, setId }) {
       }
       try {
         const response = await axios.post(
-          `${process.env.VINTED_BACKEND}/user/login`,
+          `https://site--backend-vinted--wbbmf4gr4bwy.code.run/user/login`,
           {
             email,
             password,
@@ -48,7 +48,7 @@ export default function Login({ userToken, setToken, userId, setId }) {
         if (response.data.token && response.data._id) {
           setToken(response.data.token);
           setId(response.data._id);
-          alert("All good");
+          // alert("All good");
         } else {
           setErrorMessage("Une erreur est survenue, merci de réessayer");
         }
@@ -126,6 +126,7 @@ const useStyle = () => {
   const dimensions = useWindowDimensions();
   const styles = StyleSheet.create({
     safeAreaView: {
+      marginTop: Platform.OS === "android" ? Constants.statusBarHeight : 0,
       backgroundColor: "white",
       flex: 1,
       width: dimensions.width,

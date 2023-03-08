@@ -4,12 +4,15 @@ import { LinearGradient } from "expo-linear-gradient";
 import { colors } from "../src/utils/colors";
 import { TextInput } from "react-native";
 import { TextInput as Input } from "react-native-paper";
+import CustomText from "../components/CustomText";
+import ArticleCard from "../components/ArticleCard";
 
 function App() {
   const { styles } = useStyle();
 
   return (
     <View style={styles.container}>
+      <CustomText text="Mon texte" />
       <Input
         placeholder="test"
         keyboardType="email-address"
@@ -24,7 +27,6 @@ function App() {
         numberOfLines={50}
         style={styles.input}
       />
-
       {/* <LinearGradient
         colors={[colors.vBlue, colors.vLightBlue]}
         style={styles.linearGradient}
@@ -37,7 +39,7 @@ function App() {
 }
 const useStyle = () => {
   const dimensions = useWindowDimensions();
-  console.log("Logging dimensions", dimensions);
+  // console.log("Logging dimensions", dimensions);
   const styles = StyleSheet.create({
     container: {
       flex: 1,

@@ -74,7 +74,7 @@ export default function Signup({ setToken, setId, userToken }) {
 
       if (email && username && password) {
         const response = await axios.post(
-          "http://localhost:4002/user/signup",
+          "https://site--backend-vinted--wbbmf4gr4bwy.code.run/user/signup",
           formData
         );
         console.log(response.data._id);
@@ -213,6 +213,8 @@ const useStyle = () => {
   const dimensions = useWindowDimensions();
   const styles = StyleSheet.create({
     safeAreaView: {
+      marginTop: Platform.OS === "android" ? Constants.statusBarHeight : 0,
+
       backgroundColor: "white",
       width: dimensions.width,
       flex: 1,

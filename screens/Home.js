@@ -6,6 +6,7 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  FlatList,
   Text,
   View,
   useWindowDimensions,
@@ -16,9 +17,7 @@ import { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import TopNavBar from "../components/TopNavBar";
-
-const windowHeight = Dimensions.get("window").height;
-const windowWidth = Dimensions.get("window").width;
+import ArticleCard from "../components/ArticleCard";
 
 export default function Home({ userToken, userId }) {
   const { styles } = useStyle();
@@ -29,33 +28,14 @@ export default function Home({ userToken, userId }) {
 
   useEffect(() => {
     const fetchOffers = async () => {
-      const response = await axios.get(`${process.env.VINTED_BACKEND}/offers`);
+      const response = await axios.get(
+        `https://site--backend-vinted--wbbmf4gr4bwy.code.run/offers`
+      );
       setData(response.data.offers);
       setIsLoading(false);
     };
     fetchOffers();
   }, []);
-
-  //! A RETRAVAILLER
-  const handleFavorite = async (event) => {
-    if (!favorite) {
-      const addToFavorite = await axios.post(
-        `${process.env.VINTED_BACKEND}/user/favorites/${userToken}`,
-        {
-          token: userToken,
-          product_name: data.product_name,
-          offerId: data._id,
-        }
-      );
-      console.log(response.data._id);
-      setFavorite(true);
-    } else {
-      // const deleteFavorite = await axios.delete(
-      //   `http://localhost:4002/user/favorites/${userToken}`
-      // );
-      alert("Déjà dans tes favs");
-    }
-  };
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
@@ -67,15 +47,8 @@ export default function Home({ userToken, userId }) {
       ) : (
         <>
           <TopNavBar pageTitle="Annonces" />
-          <ScrollView>
-            <View
-              style={[
-                styles.wrap,
-                styles.row,
-                styles.centered,
-                { width: width },
-              ]}
-            >
+          {/* <ScrollView>
+            <View style={[styles.wrap, styles.row, styles.centered]}>
               {data.map((offer) => {
                 return (
                   <TouchableOpacity
@@ -86,10 +59,9 @@ export default function Home({ userToken, userId }) {
                     }}
                   >
                     <Text>{offer.owner.account.username} </Text>
-                    <Text>{offer._id} </Text>
                     <Image
                       style={styles.imageCard}
-                      source={{ uri: `${offer.product_image.secure_url}` }}
+                      source={{ uri: `${offer.product_image?.secure_url}` }}
                     />
                     <View style={styles.row}>
                       <Text>{offer.product_price} €</Text>
@@ -102,7 +74,6 @@ export default function Home({ userToken, userId }) {
                           onPress={() => {
                             setFavorite(true);
                           }}
-                          // onPress={handleFavorite}
                         />
                       ) : (
                         <Ionicons
@@ -119,8 +90,19 @@ export default function Home({ userToken, userId }) {
                   </TouchableOpacity>
                 );
               })}
+
+             
             </View>
-          </ScrollView>
+          </ScrollView> */}
+          <View style={styles.mainView}>
+            {/* <Text>Nombre</Text> */}
+            <FlatList
+              data={data}
+              renderItem={({ item }) => <ArticleCard article={item} />}
+              keyExtractor={(item) => `${item._id}`}
+              numColumns={2}
+            />
+          </View>
         </>
       )}
     </SafeAreaView>
@@ -134,7 +116,11 @@ const useStyle = () => {
       marginTop: Platform.OS === "android" ? Constants.statusBarHeight : 0,
       flex: 1,
       backgroundColor: "white",
-      width: windowWidth,
+      width: dimensions.width,
+    },
+    mainView: {
+      // backgroundColor: "pink",
+      alignItems: "center",
     },
 
     centered: {
@@ -146,11 +132,13 @@ const useStyle = () => {
     },
     wrap: {
       flexWrap: "wrap",
-      gap: 10,
+      // gap: 10,
     },
     imageCard: {
-      width: 200,
-      height: 300,
+      // wdth: 400,
+      width: dimensions.width * 0.4,
+      // height: 300,
+      height: dimensions.height * 0.3,
       borderRadius: 10,
     },
   });

@@ -4,6 +4,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  Platform,
   View,
   useWindowDimensions,
 } from "react-native";
@@ -98,7 +99,7 @@ const useStyle = () => {
     },
     mainPicture: {
       width: dimensions.width * 0.95,
-      height: 350,
+      height: dimensions.height * 0.35,
       resizeMode: "cover",
     },
     centered: {
@@ -113,8 +114,12 @@ const useStyle = () => {
     },
     mainZoneBottom: {
       height: "40%",
-      justifyContent: "space-between",
-      padding: 20,
+      // justifyContent: "space-between",
+      paddingLeft: 20,
+      paddingRight: 20,
+      gap: 30,
+
+      // backgroundColor: "pink",
     },
 
     btnPrimary: {

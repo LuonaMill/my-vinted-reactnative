@@ -5,6 +5,7 @@ export const colors = {
   vDarkestGrey: "#515151",
   vDarkerGrey: "#838383",
   vDarkGrey: "#A0A0A0",
+  vGrey: "#B8B8B8",
   vLightGrey: "#C4C4C4",
   vLighterGrey: "#D7D7D7",
   vLightestGrey: "#E5E5E5",

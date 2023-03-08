@@ -28,6 +28,7 @@ export default function Input({ title, type, placeholder, lines, setState }) {
         }
         style={styles.input}
         onChangeText={(input) => setState(input)}
+        autoCapitalize="none"
       />
     </View>
   );

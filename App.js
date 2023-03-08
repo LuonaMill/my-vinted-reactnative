@@ -179,6 +179,7 @@ export default function App() {
                       <Stack.Screen
                         name="Rechercher un article"
                         component={Search}
+                        options={{ headerShown: false }}
                       />
                     </Stack.Navigator>
                   )}
